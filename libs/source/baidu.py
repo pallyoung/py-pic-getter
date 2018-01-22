@@ -1,6 +1,7 @@
 from libs.spider import HttpClient;
 import urllib
 import json;
+import time;
 
 HOST = "http://image.baidu.com/";
 HEADERS = {
@@ -8,7 +9,7 @@ HEADERS = {
     'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
 }
 PATH = {
-    "search":"http://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&ie=utf-8&oe=utf-8",
+    "search":r"http://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&ie=utf-8&oe=utf-8&lm=-1",
     'items':'http://image.baidu.com/channel/listjson?ie=utf8'
 }
 
@@ -21,7 +22,15 @@ class Provider():
         result = {}
         imgs = [];
         for img in data:
-            if 'middleURL' in img:
+            if 'replaceUrl' in img:
+                imgs.append({
+                    'url': img['replaceUrl'][0]['ObjURL']
+                });
+            elif 'largeTnImageUrl' in img and img['largeTnImageUrl']:
+                imgs.append({
+                    'url': img['largeTnImageUrl']
+                });
+            elif 'middleURL' in img:
                 imgs.append({
                     'url':img['middleURL']
                 });
@@ -40,11 +49,11 @@ class Provider():
     def search(self,word,pn=0,rn=30,callback=None,width=None,height=None):
 
         word = urllib.parse.quote(word);
-        url = "%s&queryWord=%s&word=%s&pn=%i&rn=%i" % (PATH['search'],word,word, pn, rn);
+        url = r"%s&queryWord=%s&word=%s&pn=%i&rn=%i" % (PATH['search'],word,word, pn, rn);
         if width:
-            url = "%s&witdh=%i"%(url,width);
+            url = r"%s&width=%i"%(url,width);
         if height:
-            url = "%s&height=%i"%(url,height);
+            url = r"%s&height=%i"%(url,height);
 
         http_client = HttpClient.HttpClient(url);
         http_client.headers = HEADERS;

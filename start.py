@@ -39,6 +39,6 @@ def success(result):
 
 
 def serach(word,width=None,height=None):
-    provider.search(word,pn,rn,callback=success);
+    provider.search(word,pn,rn,callback=success,width=width,height=height);
 
-serach('明星',width=1920,height=1080);
+serach('明星',width=1080,height=1920);
